@@ -23,7 +23,7 @@ pipeline {
             }
         }
 
-        stage('Continuos Test')
+        stage('Continuos test')
         {
             steps{
                 git branch: 'main', url: 'https://github.com/sysgeeks4u/Functional-Testing.git'
