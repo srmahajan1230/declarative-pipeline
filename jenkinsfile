@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+
+    stages{
+        stage('Continuos Download')
+        {
+            steps{
+                git branch: 'main', url: 'https://github.com/sysgeeks4u/Maven-Tomcat.git'
+            }
+        }
+
+        stage('Continuos Build')
+        {
+            steps{
+                sh 'mvn package'
+            }
+        }
+
+        stage('Continuos Delivery')
+        {
+            steps{
+                deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: 'tomcat-admin', path: '', url: 'http://172.31.66.73:8080')], contextPath: 'testapp', war: '**/*.war'
+            }
+        }
+
+        stage('Continuos Test')
+        {
+            steps{
+                git branch: 'main', url: 'https://github.com/sysgeeks4u/Functional-Testing.git'
+                sh 'java -jar /var/lib/jenkins/workspace/testing/testing.jar'
+            }
+        }
+
+        stage('Continuos Deploy')
+        {
+            steps{
+                deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: 'Prod-Tomcat', path: '', url: 'http://172.31.19.52:8080')], contextPath: 'testapp', war: '**/*.war'
+            }
+        }
+
+    }
+}
